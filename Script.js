@@ -81,4 +81,38 @@ const PixelBG = (() => {
     return { init };
 })();
 
-document.addEventListener("DOMContentLoaded", () => PixelBG.init());
+document.addEventListener("DOMContentLoaded", () => {
+    PixelBG.init();
+
+    // Scroll-linked marquee
+    const marquees = document.querySelectorAll('.marquee-content-img');
+    
+    window.addEventListener('scroll', () => {
+        const scrollPosition = window.scrollY;
+        
+        marquees.forEach(marquee => {
+            // Kita kalikan posisi scroll dengan faktor kecepatan (0.05)
+            // vw unit dipakai agar responsif terhadap layar
+            if (marquee.classList.contains('reverse')) {
+                // Yang reverse mulai dari -200vw dan bergerak ke arah kanan
+                marquee.style.transform = `translateX(${-200 + (scrollPosition * 0.05)}vw)`;
+            } else {
+                // Yang normal mulai dari 0 dan bergerak ke arah kiri
+                marquee.style.transform = `translateX(${-scrollPosition * 0.05}vw)`;
+            }
+        });
+    });
+
+    // Scroll Reveal Animation for project cards
+    const revealElements = document.querySelectorAll('.scroll-reveal');
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('revealed');
+                revealObserver.unobserve(entry.target); // Hanya animasi sekali
+            }
+        });
+    }, { threshold: 0.15 });
+
+    revealElements.forEach(el => revealObserver.observe(el));
+});
